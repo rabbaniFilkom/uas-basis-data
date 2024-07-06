@@ -1,0 +1,76 @@
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS profiles;
+DROP TABLE IF EXISTS posts;
+DROP TABLE IF EXISTS comments;
+
+-- Membuat tabel users
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(40) NOT NULL,
+    password VARCHAR(25) NOT NULL,
+    role VARCHAR(8) NOT NULL
+) COLLATE='utf8mb4_general_ci';
+
+-- Menyisipkan data ke tabel users
+INSERT INTO users (username, password, role) VALUES
+('AbuBakar', 'asshidiq', 'User'),
+('AliBinAbiTolib', 'babulilmi', 'User'),
+('UmarBinKhattab', 'alfaruq', 'User');
+
+-- Membuat tabel profiles
+CREATE TABLE profiles (
+    profile_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    full_name VARCHAR(100) NOT NULL,
+    birthdate DATE NOT NULL,
+    bio VARCHAR(500),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+) COLLATE='utf8mb4_general_ci';
+
+-- Menyisipkan data ke tabel profiles
+INSERT INTO profiles (user_id, full_name, birthdate, bio) VALUES
+(1, 'User One', '0573-01-01', 'Abu Bakar Ash-Shiddiq adalah salah satu sahabat terdekat Nabi Muhammad SAW dan merupakan Khalifah pertama dalam sejarah Islam setelah wafatnya Nabi.'),
+(2, 'User Two', '0599-01-01', 'Ali bin Abi Thalib adalah salah satu sahabat terdekat Nabi Muhammad SAW dan menantu beliau melalui pernikahannya dengan putri Nabi, Fatimah az-Zahra.'),
+(3, 'User Three', '0584-01-01', 'Umar bin Khattab adalah salah satu sahabat terkemuka Nabi Muhammad SAW dan Khalifah kedua dalam sejarah Islam setelah Abu Bakar Ash-Shiddiq.');
+
+-- Membuat tabel posts
+CREATE TABLE posts (
+    post_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id)
+) COLLATE='utf8mb4_general_ci';
+
+-- Menyisipkan data ke tabel posts
+INSERT INTO posts (user_id, title, content) VALUES
+(1, 'Khalifah pertama', 'Salah satu kisah yang menonjol tentang Abu Bakar Ash-Shiddiq bersama Rasulullah Muhammad SAW adalah saat peristiwa Hijrah, atau perpindahan Nabi Muhammad SAW dari Makkah ke Madinah.'),
+(2, 'gerbangnya ilmu', 'Salah satu kisah yang terkenal tentang Ali bin Abi Thalib bersama Rasulullah Muhammad SAW adalah saat peristiwa Hijrah, atau perpindahan Nabi dari Makkah ke Madinah.'),
+(3, 'Singa padang pasir', 'Ketika Umar bin Khattab menerima kabar tentang wafatnya Rasulullah Muhammad SAW, itu adalah momen yang sangat mendalam dan mengguncangkan bagi seluruh umat Islam.');
+
+-- Membuat tabel comments
+CREATE TABLE comments (
+    comment_id INT AUTO_INCREMENT PRIMARY KEY,
+    post_id INT NOT NULL,
+    user_id INT NOT NULL,
+    comment_text VARCHAR(1000) NOT NULL,
+    commented_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (post_id) REFERENCES posts(post_id),
+    FOREIGN KEY (user_id) REFERENCES users(id)
+) COLLATE='utf8mb4_general_ci';
+
+-- Menyisipkan data ke tabel comments
+INSERT INTO comments (post_id, user_id, comment_text) VALUES
+(1, 2, 'pemimpin bijaksana dan setia pada ajaran Islam.'),
+(2, 3, 'mencerminkan penghargaan yang dalam terhadap keberanian, kearifan, dan keteladanan Ali dalam menyebarkan dan mempertahankan ajaran Islam'),
+(3, 1, 'Umar bin khattab (singa padang pasir paling di takuti) dari keberanian, ketegasan, dan kekuatan militer atas kontribusi Umar dalam menjaga dan memperluas ajaran Islam serta mempertahankan kesatuan umat Muslim.');
+
+
+SELECT u.username, p.full_name, p.bio
+FROM users u
+JOIN profiles p ON u.id = p.user_id;
+
+SELECT po.title, po.content, c.comment_text
+FROM posts po
+LEFT JOIN comments c ON po.post_id = c.post_id;
